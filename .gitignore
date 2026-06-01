@@ -17,3 +17,10 @@ libOP2Utility.a
 
 # Vcpkg
 **/vcpkg_installed/
+
+# CMake build output
+build/
+/build*/
+*.dll
+*.dll.a
+*.exe
