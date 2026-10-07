@@ -10,18 +10,18 @@ C++ library for Outpost 2 game resources (maps, archives, graphics, …).
 
 OP2Utility is a **static C++ library**: its public API is C++ classes that use
 exceptions and STL types (`std::string`, `std::vector`, …). Those cannot safely
-cross a DLL boundary between different compilers or runtimes — an MSVC-built DLL
+cross a DLL boundary between different compilers or runtimes; an MSVC-built DLL
 can't be consumed by a MinGW/GCC app, and vice versa.
 
 OP2UtilityC solves that by exposing a **flat C interface** instead:
 
-- opaque handles (`Op2Map*`) — C++ objects never cross the boundary,
+- opaque handles (`Op2Map*`): C++ objects never cross the boundary,
 - plain-old-data out-parameters and integer error codes (`Op2Result`),
 - **all exceptions caught inside** the library (converted to error codes + a
   message via `op2_last_error()`).
 
 A C ABI is stable across toolchains and languages, so the resulting DLL can be
-used from C, C++, C#, Python, Rust, Go — anything with FFI.
+used from C, C++, C#, Python, Rust, Go, or anything with FFI.
 
 ## What's wrapped
 
@@ -32,7 +32,7 @@ The map-loading surface, for now:
 - Per-cell lookups: cell type, tile-mapping index, tileset index, image index,
   lava-possible.
 
-The wrapper is intentionally easy to extend — add more `extern "C"` functions in
+The wrapper is intentionally easy to extend: add more `extern "C"` functions in
 `capi/op2utility_c.*` to expose VOL/CLM archives, sprites, etc. as needed.
 
 ## The C API
@@ -72,7 +72,7 @@ op2_map_free(map);
 
 ## Building
 
-Requires CMake and a C++20 compiler (MSVC, GCC, or Clang — same as OP2Utility).
+Requires CMake and a C++20 compiler (MSVC, GCC, or Clang, same as OP2Utility).
 
 ```sh
 cmake -S . -B build -G Ninja
@@ -81,12 +81,12 @@ cmake --build build
 
 Outputs (Windows/MinGW):
 
-- `build/OP2Utility.dll` — the shared library
-- `build/libOP2Utility.dll.a` — the import library to link against
-- `build/op2utility_smoketest.exe` — a pure-C test that exercises the ABI
+- `build/OP2Utility.dll`: the shared library
+- `build/libOP2Utility.dll.a`: the import library to link against
+- `build/op2utility_smoketest.exe`: a pure-C test that exercises the ABI
 
 On MinGW the DLL is linked with `-static-libgcc -static-libstdc++ -static`, so it
-is **self-contained** — consumers don't need a matching `libstdc++`/`libgcc` at
+is **self-contained**: consumers don't need a matching `libstdc++`/`libgcc` at
 runtime. (Safe because only a C ABI crosses the boundary.)
 
 ## Using it in your project
