@@ -69,6 +69,18 @@ OP2UTILITYC_API Op2Result op2_map_tileset_index(const Op2Map* map, uint32_t x, u
 OP2UTILITYC_API Op2Result op2_map_image_index(const Op2Map* map, uint32_t x, uint32_t y, uint32_t* out);
 OP2UTILITYC_API Op2Result op2_map_lava_possible(const Op2Map* map, uint32_t x, uint32_t y, int32_t* outBool);
 
+/* Tileset sources: the well bitmaps this map references. A cell's tileset index
+ * (op2_map_tileset_index) indexes into this list. */
+OP2UTILITYC_API uint32_t op2_map_tileset_source_count(const Op2Map* map);
+
+/* Writes source[index]'s filename (e.g. "well0001", no extension, trailing
+ * padding trimmed) into buf as a null-terminated string. */
+OP2UTILITYC_API Op2Result op2_map_tileset_source_name(const Op2Map* map, uint32_t index,
+                                                      char* buf, int32_t bufLen);
+
+/* Number of tiles in source[index]. */
+OP2UTILITYC_API uint32_t op2_map_tileset_source_tile_count(const Op2Map* map, uint32_t index);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

@@ -7,6 +7,8 @@
 #endif
 #include "op2utility_c.h"
 
+#include <algorithm>
+#include <cstring>
 #include <new>
 #include <string>
 
@@ -54,7 +56,7 @@ Op2Result cellQuery(const Op2Map* map, uint32_t x, uint32_t y, Fn&& fn) {
 
 extern "C" {
 
-uint32_t op2_capi_version(void) { return 1; }
+uint32_t op2_capi_version(void) { return 2; }
 
 const char* op2_last_error(void) { return g_lastError.c_str(); }
 
@@ -149,6 +151,31 @@ Op2Result op2_map_lava_possible(const Op2Map* map, uint32_t x, uint32_t y, int32
     return cellQuery(map, x, y, [&](const OP2Utility::Map& m, uint32_t cx, uint32_t cy) {
         *out = m.GetLavaPossible(cx, cy) ? 1 : 0;
     });
+}
+
+uint32_t op2_map_tileset_source_count(const Op2Map* map) {
+    return map ? static_cast<uint32_t>(map->map.tilesetSources.size()) : 0;
+}
+
+Op2Result op2_map_tileset_source_name(const Op2Map* map, uint32_t index,
+                                      char* buf, int32_t bufLen) {
+    if (!map || !buf || bufLen <= 0) { setError("null arg"); return OP2_ERR_NULL; }
+    if (index >= map->map.tilesetSources.size()) { setError("source index out of range"); return OP2_ERR_BOUNDS; }
+
+    const std::string& name = map->map.tilesetSources[index].tilesetFilename;
+    // Trim trailing padding (spaces / NULs) from the fixed-length on-disk name.
+    std::size_t len = name.size();
+    while (len > 0 && (name[len - 1] == ' ' || name[len - 1] == '\0')) --len;
+
+    const std::size_t n = std::min(static_cast<std::size_t>(bufLen - 1), len);
+    std::memcpy(buf, name.data(), n);
+    buf[n] = '\0';
+    return OP2_OK;
+}
+
+uint32_t op2_map_tileset_source_tile_count(const Op2Map* map, uint32_t index) {
+    if (!map || index >= map->map.tilesetSources.size()) return 0;
+    return map->map.tilesetSources[index].numTiles;
 }
 
 } // extern "C"
